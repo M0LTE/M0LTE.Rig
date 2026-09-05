@@ -2,8 +2,10 @@ namespace M0LTE.Rig.Hamlib.Tests;
 
 /// <summary>
 /// Parser tests against wire text captured from a REAL <c>rigctld</c> 4.5.5 dummy rig
-/// (transcripts in <c>docs/research/rig-control-spike.md</c>) - the recorded-transcript
-/// technique, so the parser meets bytes the daemon actually emits.
+/// (transcripts in the design and research notes,
+/// <see href="https://github.com/packet-net/packet.net/blob/main/docs/research/rig-control-spike.md">rig-control-spike.md</see>,
+/// in the packet.net repo where this library was written) - the recorded-transcript technique,
+/// so the parser meets bytes the daemon actually emits.
 /// </summary>
 public class RigctldProtocolTests
 {

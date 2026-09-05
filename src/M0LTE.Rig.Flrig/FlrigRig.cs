@@ -39,11 +39,12 @@ public sealed class FlrigRig : IRigControl
     private readonly TimeProvider time;
     private readonly HttpClient http;
     private readonly SemaphoreSlim gate = new(1, 1);
+    private readonly CancellationTokenSource disposing = new();
 
     private double powerMeterScale = 1.0;
     private bool tryGetSwr = true; // probe rig.get_SWR once; revert to get_swrmeter interpolation
     private bool keyedByUs;
-    private bool disposed;
+    private volatile bool disposed;
 
     private FlrigRig(FlrigRigOptions options, HttpMessageHandler? handler)
     {
@@ -136,6 +137,7 @@ public sealed class FlrigRig : IRigControl
         {
             rig.http.Dispose();
             rig.gate.Dispose();
+            rig.disposing.Dispose();
             throw;
         }
     }
@@ -308,6 +310,7 @@ public sealed class FlrigRig : IRigControl
         }
 
         disposed = true;
+        disposing.Cancel(); // wakes anything queued in CallAsync's gate.WaitAsync
 
         if (keyedByUs)
         {
@@ -326,6 +329,7 @@ public sealed class FlrigRig : IRigControl
 
         http.Dispose();
         gate.Dispose();
+        disposing.Dispose();
     }
 
     private string ResolveNativeMode(RigMode mode)
@@ -355,7 +359,21 @@ public sealed class FlrigRig : IRigControl
     private async Task<string> CallAsync(string methodName, object[] args, CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
-        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        using (var gateToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, disposing.Token))
+        {
+            try
+            {
+                await gate.WaitAsync(gateToken.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (disposing.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+            {
+                // Dispose fired while this call was still queued behind another - there is
+                // nothing left to serve it.
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+        }
+
         try
         {
             using var timeout = new CancellationTokenSource(options.CommandTimeout, time);
@@ -378,6 +396,15 @@ public sealed class FlrigRig : IRigControl
                 throw new RigTimeoutException(
                     $"flrig gave no reply to {methodName} within {options.CommandTimeout.TotalSeconds:0.#}s.");
             }
+            catch (OperationCanceledException) when (disposed && !cancellationToken.IsCancellationRequested && !timeout.IsCancellationRequested)
+            {
+                // HttpClient.Dispose() cancels the pending request out from under us.
+                throw new RigConnectionException($"flrig client disposed while '{methodName}' was in flight.");
+            }
+            catch (ObjectDisposedException)
+            {
+                throw new RigConnectionException($"flrig client disposed while '{methodName}' was in flight.");
+            }
             catch (HttpRequestException ex)
             {
                 throw new RigConnectionException($"Cannot reach flrig at {options.Host}:{options.Port}.", ex);
@@ -385,7 +412,21 @@ public sealed class FlrigRig : IRigControl
         }
         finally
         {
+            ReleaseGate();
+        }
+    }
+
+    /// <summary>Releases the gate, swallowing a disposal race: dispose deliberately does not
+    /// wait for an in-flight call, so the gate can be gone by the time that call releases
+    /// it.</summary>
+    private void ReleaseGate()
+    {
+        try
+        {
             gate.Release();
+        }
+        catch (ObjectDisposedException)
+        {
         }
     }
 }

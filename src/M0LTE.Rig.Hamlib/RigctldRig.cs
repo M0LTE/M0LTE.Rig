@@ -9,7 +9,9 @@ namespace M0LTE.Rig.Hamlib;
 /// by <c>rigctld</c> (and emulated by wfview, SDR++, GQRX, SparkSDR, skycatd, nCAT ...; only real
 /// rigctld is tested against today). Pure managed sockets: no libhamlib native dependency, which
 /// is the pattern every surviving hamlib client ecosystem converged on - the P/Invoke lineage is
-/// uniformly abandoned (see <c>docs/research/rig-control-spike.md</c>).
+/// uniformly abandoned (see the design and research notes,
+/// <see href="https://github.com/packet-net/packet.net/blob/main/docs/research/rig-control-spike.md">rig-control-spike.md</see>,
+/// in the packet.net repo where this library was written).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -47,6 +49,7 @@ public sealed class RigctldRig : IRigControl
     private readonly RigctldRigOptions options;
     private readonly TimeProvider time;
     private readonly SemaphoreSlim gate = new(1, 1);
+    private readonly CancellationTokenSource disposing = new();
 
     private TcpClient? tcp;
     private StreamReader? reader;
@@ -54,7 +57,7 @@ public sealed class RigctldRig : IRigControl
     private bool vfoMode;
     private bool probed;
     private bool keyedByUs;
-    private bool disposed;
+    private volatile bool disposed;
 
     private RigctldRig(RigctldRigOptions options)
     {
@@ -233,9 +236,8 @@ public sealed class RigctldRig : IRigControl
 
     /// <summary>
     /// Read any hamlib level by token (<c>STRENGTH</c>, <c>ALC</c>, <c>TEMP_METER</c>, ...) - the
-    /// escape hatch below the <see cref="IRigControl"/> common subset, same spirit as
-    /// <c>TaitCcdiRadio.TransactRawAsync</c>. Token names come from <c>rigctl</c>'s
-    /// <c>l ?</c>.
+    /// escape hatch below the <see cref="IRigControl"/> common subset. Token names come from
+    /// <c>rigctl</c>'s <c>l ?</c>.
     /// </summary>
     public async ValueTask<double> ReadLevelAsync(string level, CancellationToken cancellationToken = default)
     {
@@ -274,6 +276,7 @@ public sealed class RigctldRig : IRigControl
         }
 
         disposed = true;
+        disposing.Cancel(); // wakes anything queued in TransactAsync's gate.WaitAsync
 
         if (keyedByUs)
         {
@@ -282,6 +285,7 @@ public sealed class RigctldRig : IRigControl
 
         DropConnection();
         gate.Dispose();
+        disposing.Dispose();
     }
 
     /// <summary>
@@ -356,7 +360,21 @@ public sealed class RigctldRig : IRigControl
         string commandLine, CancellationToken cancellationToken, bool injectVfo = true)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
-        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        using (var gateToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, disposing.Token))
+        {
+            try
+            {
+                await gate.WaitAsync(gateToken.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (disposing.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+            {
+                // Dispose fired while this command was still queued behind another - there is
+                // nothing left to serve it.
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+        }
+
         try
         {
             await EnsureConnectedAsync(cancellationToken).ConfigureAwait(false);
@@ -365,7 +383,21 @@ public sealed class RigctldRig : IRigControl
         }
         finally
         {
+            ReleaseGate();
+        }
+    }
+
+    /// <summary>Releases the gate, swallowing a disposal race: dispose deliberately does not
+    /// wait for an in-flight command, so the gate can be gone by the time that command releases
+    /// it.</summary>
+    private void ReleaseGate()
+    {
+        try
+        {
             gate.Release();
+        }
+        catch (ObjectDisposedException)
+        {
         }
     }
 
@@ -428,7 +460,9 @@ public sealed class RigctldRig : IRigControl
         }
         catch (Exception ex) when (ex is IOException or SocketException or ObjectDisposedException)
         {
-            throw Fault(new RigConnectionException($"Connection to rigctld failed during '{commandLine}'.", ex));
+            throw Fault(disposed
+                ? new RigConnectionException($"rigctld client disposed while '{commandLine}' was in flight.")
+                : new RigConnectionException($"Connection to rigctld failed during '{commandLine}'.", ex));
         }
     }
 
@@ -457,7 +491,9 @@ public sealed class RigctldRig : IRigControl
         }
         catch (Exception ex) when (ex is IOException or SocketException or ObjectDisposedException)
         {
-            throw Fault(new RigConnectionException($"Connection to rigctld failed during '{commandLine}'.", ex));
+            throw Fault(disposed
+                ? new RigConnectionException($"rigctld client disposed while '{commandLine}' was in flight.")
+                : new RigConnectionException($"Connection to rigctld failed during '{commandLine}'.", ex));
         }
     }
 

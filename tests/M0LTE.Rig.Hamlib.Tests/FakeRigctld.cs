@@ -7,12 +7,13 @@ using System.Text;
 namespace M0LTE.Rig.Hamlib.Tests;
 
 /// <summary>
-/// An in-process, scriptable NET-rigctl server - the seam the client tests drive, in the same
-/// spirit as the scripted <c>ISerialIo</c> fakes elsewhere in the repo. Reply text mirrors the
-/// wire format captured from a real <c>rigctld</c> 4.5.5 dummy rig (see
-/// <c>docs/research/rig-control-spike.md</c>), so the parser is tested against bytes the real
-/// daemon emits. Fault injection covers the paths the real daemon makes awkward: scripted
-/// <c>RPRT</c> errors, swallowed replies (timeouts), and mid-command disconnects.
+/// An in-process, scriptable NET-rigctl server - the seam the client tests drive. Reply text
+/// mirrors the wire format captured from a real <c>rigctld</c> 4.5.5 dummy rig (see the design
+/// and research notes,
+/// <see href="https://github.com/packet-net/packet.net/blob/main/docs/research/rig-control-spike.md">rig-control-spike.md</see>,
+/// in the packet.net repo where this library was written), so the parser is tested against bytes
+/// the real daemon emits. Fault injection covers the paths the real daemon makes awkward:
+/// scripted <c>RPRT</c> errors, swallowed replies (timeouts), and mid-command disconnects.
 /// </summary>
 internal sealed class FakeRigctld : IAsyncDisposable
 {

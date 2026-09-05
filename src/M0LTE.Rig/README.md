@@ -49,7 +49,8 @@ AX.25 stack of any particular project. Backends:
   partial view (PTT + relative RF-power meter) of a Tait TM8100/TM8200 over CCDI, demonstrating
   a backend that honestly advertises only a slice of the surface.
 
-Design and research notes: `docs/research/rig-control-spike.md` in the repo.
+Design and research notes live in packet.net, where this library was written:
+[`docs/research/rig-control-spike.md`](https://github.com/packet-net/packet.net/blob/main/docs/research/rig-control-spike.md).
 
 ---
 *AGPL-3.0-licensed. Standalone; used by (among others) the [Packet.NET](https://github.com/packet-net/packet.net) stack.*

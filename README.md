@@ -23,7 +23,7 @@ await using var rig = await RigctldRig.ConnectAsync(new RigctldRigOptions { Host
 await rig.SetFrequencyAsync(14_074_000);
 await rig.SetModeAsync(RigMode.PktUsb);
 
-if (rig.Capabilities.HasFlag(RigCapabilities.SwrRead))
+if (rig.Capabilities.HasFlag(RigCapabilities.SwrMeter))
 {
     Console.WriteLine($"SWR {await rig.ReadSwrAsync():F1}:1");
 }

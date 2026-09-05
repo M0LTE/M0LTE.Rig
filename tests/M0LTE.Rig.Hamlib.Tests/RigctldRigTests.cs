@@ -401,6 +401,49 @@ public class RigctldRigTests
         await act.Should().ThrowAsync<ArgumentOutOfRangeException>();
     }
 
+    [Fact]
+    public async Task Dispose_During_An_In_Flight_Command_Surfaces_A_Connection_Fault_Not_A_Disposed_Semaphore()
+    {
+        await using var fake = new FakeRigctld();
+        var rig = await RigctldRig.ConnectAsync(new RigctldRigOptions
+        {
+            Port = fake.Port,
+            CommandTimeout = TimeSpan.FromSeconds(30),
+        });
+
+        fake.SwallowNextReply = true;
+        var pending = rig.GetFrequencyAsync().AsTask();
+        await WaitUntilAsync(() => fake.ReceivedCommands.Contains("+f"));
+
+        await rig.DisposeAsync();
+
+        var act = async () => await pending.WaitAsync(TimeSpan.FromSeconds(5));
+        (await act.Should().ThrowAsync<RigConnectionException>())
+            .Which.Message.Should().Contain("disposed");
+    }
+
+    [Fact]
+    public async Task Dispose_Wakes_A_Command_Queued_Behind_A_Stuck_One()
+    {
+        await using var fake = new FakeRigctld();
+        var rig = await RigctldRig.ConnectAsync(new RigctldRigOptions
+        {
+            Port = fake.Port,
+            CommandTimeout = TimeSpan.FromSeconds(30),
+        });
+
+        fake.SwallowNextReply = true;
+        var stuck = rig.GetFrequencyAsync().AsTask();
+        await WaitUntilAsync(() => fake.ReceivedCommands.Contains("+f"));
+
+        var queued = rig.GetPttAsync().AsTask();
+
+        await rig.DisposeAsync();
+
+        var act = async () => await queued.WaitAsync(TimeSpan.FromSeconds(5));
+        await act.Should().ThrowAsync<ObjectDisposedException>();
+    }
+
     private static async Task WaitUntilAsync(Func<bool> condition)
     {
         // Bounded poll for cross-task visibility - not a timing dependency: the condition is

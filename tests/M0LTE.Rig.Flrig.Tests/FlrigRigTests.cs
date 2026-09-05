@@ -247,6 +247,29 @@ public class FlrigRigTests
     }
 
     [Fact]
+    public async Task Dispose_During_An_In_Flight_Call_Surfaces_A_Connection_Fault()
+    {
+        using var handler = new FakeFlrigHandler();
+        var rig = await FlrigRig.ConnectAsync(
+            new FlrigRigOptions { CommandTimeout = TimeSpan.FromSeconds(30) },
+            handler,
+            CancellationToken.None);
+
+        handler.HangNextRequest = true;
+        var pending = rig.GetFrequencyAsync().AsTask();
+        while (handler.HangNextRequest)
+        {
+            await Task.Yield(); // let the request reach the handler
+        }
+
+        await rig.DisposeAsync();
+
+        var act = async () => await pending.WaitAsync(TimeSpan.FromSeconds(5));
+        (await act.Should().ThrowAsync<RigConnectionException>())
+            .Which.Message.Should().Contain("disposed");
+    }
+
+    [Fact]
     public async Task Receive_Side_Reads_Are_Honestly_Unsupported()
     {
         using var handler = new FakeFlrigHandler();
