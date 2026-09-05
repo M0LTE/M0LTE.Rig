@@ -1,10 +1,10 @@
-# Packet.Rig.Hamlib
+# M0LTE.Rig.Hamlib
 
-[`IRigControl`](https://www.nuget.org/packages/Packet.Rig) over **hamlib's NET rigctl
+[`IRigControl`](https://www.nuget.org/packages/M0LTE.Rig) over **hamlib's NET rigctl
 protocol** - the TCP text protocol served by `rigctld` (default port 4532). Pure managed
 sockets; **no native libhamlib dependency**, so no ABI churn, no per-RID native packaging, and
 one client reaches every rig hamlib supports plus the ecosystem of rigctld-protocol emulators
-(wfview, SDR++, GQRX, SparkSDR, skycatd, nCAT, …; only real rigctld is tested today).
+(wfview, SDR++, GQRX, SparkSDR, skycatd, nCAT, ...; only real rigctld is tested today).
 
 ```csharp
 await using var rig = await RigctldRig.ConnectAsync(new RigctldRigOptions
@@ -18,7 +18,7 @@ await rig.SetFrequencyAsync(14_074_000);
 await rig.SetModeAsync(RigMode.PktUsb, passbandHz: 3000);
 var swr = await rig.ReadSwrAsync();
 var watts = await rig.ReadRfPowerWattsAsync();                    // hamlib ≥ 4.4 rigs
-var busy = await rig.ReadDcdAsync();                              // \get_dcd — channel busy?
+var busy = await rig.ReadDcdAsync();                              // \get_dcd - channel busy?
 var dbm = await rig.ReadSignalStrengthDbmAsync();                 // STRENGTH + S9 reference
 
 // Escape hatches below the common subset:
@@ -33,10 +33,10 @@ var vfo = await rig.TransactRawAsync("v");
   (`currVFO` is injected).
 - Capabilities and identity come from `\dump_caps` at connect. Advertised capabilities are the
   backend's statement of intent - a rig can still reject at runtime, surfacing as
-  `RigCommandException` with the hamlib error name (`RIG_ENAVAIL (-11)` …).
+  `RigCommandException` with the hamlib error name (`RIG_ENAVAIL (-11)` ...).
 - `ReadSignalStrengthDbmAsync` converts hamlib's `STRENGTH` level (calibrated dB relative to
-  S9) to dBm by adding `RigctldRigOptions.S9ReferenceDbm`. The default −73 dBm is the IARU
-  Region 1 HF convention; VHF/UHF stations conventionally use −93 - set the option accordingly.
+  S9) to dBm by adding `RigctldRigOptions.S9ReferenceDbm`. The default -73 dBm is the IARU
+  Region 1 HF convention; VHF/UHF stations conventionally use -93 - set the option accordingly.
 - One TCP connection, commands serialised in arrival order. On any transport fault, timeout, or
   cancellation mid-command the connection is dropped and the **next command re-dials** -
   rigctld holds all rig state, so redial is free.
@@ -51,4 +51,4 @@ RFPOWER_METER 0.5, RFPOWER_METER_WATTS 50.0). This package's own integration tes
 that and skip when `rigctld` is not installed (`apt install libhamlib-utils`).
 
 ---
-*AGPL-3.0-licensed. Part of the [Packet.NET](https://github.com/packet-net/packet.net) stack.*
+*AGPL-3.0-licensed. Standalone; used by (among others) the [Packet.NET](https://github.com/packet-net/packet.net) stack.*

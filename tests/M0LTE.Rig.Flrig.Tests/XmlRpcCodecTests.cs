@@ -1,6 +1,6 @@
-using Packet.Rig;
+using M0LTE.Rig;
 
-namespace Packet.Rig.Flrig.Tests;
+namespace M0LTE.Rig.Flrig.Tests;
 
 public class XmlRpcCodecTests
 {

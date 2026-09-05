@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Packet.Rig.Flrig\Packet.Rig.Flrig.csproj" />
+    <ProjectReference Include="..\..\src\M0LTE.Rig.Flrig\M0LTE.Rig.Flrig.csproj" />
   </ItemGroup>
 
   <ItemGroup>

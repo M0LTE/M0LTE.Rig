@@ -1,11 +1,11 @@
-namespace Packet.Rig.Flrig;
+namespace M0LTE.Rig.Flrig;
 
 /// <summary>Meter conversions for flrig's 0-100 needle-deflection replies.</summary>
 internal static class FlrigMeters
 {
     // flrig's get_swrmeter is a 0-100 deflection, not a ratio. This is hamlib flrig.c's
     // interpolation table (swrtbl/interpolateSWR), verbatim: piecewise-linear through
-    // (deflection → SWR) anchor points, treating 100 as "infinity" ≈ 10:1, result rounded
+    // (deflection -> SWR) anchor points, treating 100 as "infinity" ≈ 10:1, result rounded
     // to 0.1 as hamlib does so the two clients report identical values.
     private static readonly (double Meter, double Swr)[] Table =
     [

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 
-namespace Packet.Rig.Flrig.Tests;
+namespace M0LTE.Rig.Flrig.Tests;
 
 /// <summary>
 /// A scripted flrig XML-RPC endpoint behind an <see cref="HttpMessageHandler"/> - no sockets,

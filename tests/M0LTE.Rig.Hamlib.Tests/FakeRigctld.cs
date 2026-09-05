@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Packet.Rig.Hamlib.Tests;
+namespace M0LTE.Rig.Hamlib.Tests;
 
 /// <summary>
 /// An in-process, scriptable NET-rigctl server - the seam the client tests drive, in the same
@@ -272,7 +272,7 @@ internal sealed class FakeRigctld : IAsyncDisposable
         foreach (var line in payload)
         {
             // Default protocol carries bare values; extended keeps the "Key: value" labels.
-            // (get_level payloads are bare in both — the caller passes them label-free.)
+            // (get_level payloads are bare in both - the caller passes them label-free.)
             var text = extended ? line : StripLabel(line);
             sb.Append(text).Append('\n');
         }

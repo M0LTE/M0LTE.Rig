@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Deliberately dependency-free: this is the abstraction package generic rig-control
+       consumers (loggers, digimode apps, anything CAT-shaped) can take without inheriting
+       any AX.25 stack. Backends (M0LTE.Rig.Hamlib, M0LTE.Rig.Flrig)
+       depend on this; nothing here depends on them. -->
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Title>M0LTE.Rig - station-rig (CAT) control abstraction</Title>
+    <Description>Rig-control (CAT) abstraction for amateur-radio transceivers: get/set frequency and mode, PTT, and SWR / RF-power metering behind capability probes (IRigControl + RigCapabilities). Dependency-free; backends plug in underneath (M0LTE.Rig.Hamlib speaks hamlib's rigctld network protocol, M0LTE.Rig.Flrig speaks flrig XML-RPC). Source: github.com/M0LTE/M0LTE.Rig.</Description>
+    <PackageTags>amateur-radio;rig-control;cat;hamlib;flrig;transceiver;swr</PackageTags>
+  </PropertyGroup>
+
+</Project>

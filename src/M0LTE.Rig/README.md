@@ -1,12 +1,12 @@
-# Packet.Rig
+# M0LTE.Rig
 
 Station-rig (CAT) control abstraction for amateur-radio transceivers: get/set **frequency** and
 **mode**, **PTT**, **SWR / RF-power metering**, and receive-side **DCD / signal-strength**
 reads, all behind capability probes.
 
 ```csharp
-IRigControl rig = await RigctldRig.ConnectAsync();   // Packet.Rig.Hamlib
-// IRigControl rig = await FlrigRig.ConnectAsync();  // Packet.Rig.Flrig
+IRigControl rig = await RigctldRig.ConnectAsync();   // M0LTE.Rig.Hamlib
+// IRigControl rig = await FlrigRig.ConnectAsync();  // M0LTE.Rig.Flrig
 
 await rig.SetFrequencyAsync(14_074_000);
 await rig.SetModeAsync(RigMode.PktUsb);
@@ -27,12 +27,12 @@ if (rig.Capabilities.HasFlag(RigCapabilities.DcdRead))
 - **`IRigControl`** is the cross-backend common subset. Everything a backend might lack is
   gated by `RigCapabilities` flags discovered at connect time; calling an unadvertised member
   throws `NotSupportedException`.
-- **`RigMode`** wraps a canonical token (hamlib vocabulary: `USB`, `LSB`, `CW`, `PKTUSB`, …)
+- **`RigMode`** wraps a canonical token (hamlib vocabulary: `USB`, `LSB`, `CW`, `PKTUSB`, ...)
   with pass-through for backend-native names (`RigMode.From("DATA-U")`) - mode vocabularies
   genuinely diverge across backends, so this is not a closed enum.
 - **Receive-side reads** - `ReadDcdAsync` (true = carrier present / channel busy) and
   `ReadSignalStrengthDbmAsync` (dBm) are what the packet stack's carrier-sense seam needs;
-  the `IRadioControl` bridge adapter that consumes them is `Packet.Radio`'s `RigRadioControl`.
+  the `IRadioControl` bridge adapter that consumes them is `M0LTE.Radio`'s `RigRadioControl`.
 - **Errors** are typed: `RigConnectionException` (link down - retry is sane),
   `RigTimeoutException`, `RigCommandException` (the backend said no; carries its native code),
   `RigProtocolException` (unparseable reply).
@@ -40,16 +40,16 @@ if (rig.Capabilities.HasFlag(RigCapabilities.DcdRead))
   polling cadence.
 
 This package is deliberately **dependency-free** - it does not pull in the rest of the
-Packet.NET AX.25 stack. Backends:
+AX.25 stack of any particular project. Backends:
 
-- [`Packet.Rig.Hamlib`](https://www.nuget.org/packages/Packet.Rig.Hamlib) - hamlib's `rigctld`
+- [`M0LTE.Rig.Hamlib`](https://www.nuget.org/packages/M0LTE.Rig.Hamlib) - hamlib's `rigctld`
   network protocol (any of hamlib's 200+ rigs, plus the many rigctld-protocol emulators).
-- [`Packet.Rig.Flrig`](https://www.nuget.org/packages/Packet.Rig.Flrig) - flrig's XML-RPC server.
-- [`Packet.Radio.Tait`](https://www.nuget.org/packages/Packet.Radio.Tait) - `TaitRigControl`, a
+- [`M0LTE.Rig.Flrig`](https://www.nuget.org/packages/M0LTE.Rig.Flrig) - flrig's XML-RPC server.
+- [`M0LTE.Radio.Tait`](https://www.nuget.org/packages/M0LTE.Radio.Tait) - `TaitRigControl`, a
   partial view (PTT + relative RF-power meter) of a Tait TM8100/TM8200 over CCDI, demonstrating
   a backend that honestly advertises only a slice of the surface.
 
 Design and research notes: `docs/research/rig-control-spike.md` in the repo.
 
 ---
-*AGPL-3.0-licensed. Part of the [Packet.NET](https://github.com/packet-net/packet.net) stack.*
+*AGPL-3.0-licensed. Standalone; used by (among others) the [Packet.NET](https://github.com/packet-net/packet.net) stack.*

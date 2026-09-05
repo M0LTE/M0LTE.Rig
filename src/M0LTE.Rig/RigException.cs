@@ -1,4 +1,4 @@
-namespace Packet.Rig;
+namespace M0LTE.Rig;
 
 /// <summary>Base for all rig-control failures, so callers can catch one type per rig.
 /// Capability misses are <em>not</em> <see cref="RigException"/>s - feature-probe-then-call

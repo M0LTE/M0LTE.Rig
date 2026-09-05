@@ -1,6 +1,6 @@
-# Packet.Rig.Flrig
+# M0LTE.Rig.Flrig
 
-[`IRigControl`](https://www.nuget.org/packages/Packet.Rig) over **flrig's XML-RPC server**
+[`IRigControl`](https://www.nuget.org/packages/M0LTE.Rig) over **flrig's XML-RPC server**
 (default `127.0.0.1:12345`). The client contract deliberately mirrors hamlib's own flrig
 backend (`rigs/dummy/flrig.c`) - the most battle-tested flrig client - including its meter
 conversions, so both report identical values.
@@ -13,7 +13,7 @@ Console.WriteLine(rig.FlrigVersion);        // main.get_version
 
 await rig.SetFrequencyAsync(7_074_000);
 
-// flrig mode names are rig-native — enumerate before you set:
+// flrig mode names are rig-native - enumerate before you set:
 Console.WriteLine(string.Join(", ", rig.SupportedModes));   // e.g. LSB, USB, CW, DATA-U
 await rig.SetModeAsync(RigMode.From("DATA-U"));
 
@@ -43,4 +43,4 @@ Testing: flrig is a GUI app with no headless mode - this package's tests script 
 XML-RPC fake (the established technique for flrig clients).
 
 ---
-*AGPL-3.0-licensed. Part of the [Packet.NET](https://github.com/packet-net/packet.net) stack.*
+*AGPL-3.0-licensed. Standalone; used by (among others) the [Packet.NET](https://github.com/packet-net/packet.net) stack.*

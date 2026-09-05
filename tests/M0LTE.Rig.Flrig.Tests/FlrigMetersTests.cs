@@ -1,4 +1,4 @@
-namespace Packet.Rig.Flrig.Tests;
+namespace M0LTE.Rig.Flrig.Tests;
 
 public class FlrigMetersTests
 {

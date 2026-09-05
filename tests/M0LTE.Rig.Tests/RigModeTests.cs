@@ -1,6 +1,6 @@
-using Packet.Rig;
+using M0LTE.Rig;
 
-namespace Packet.Rig.Tests;
+namespace M0LTE.Rig.Tests;
 
 public class RigModeTests
 {
@@ -30,7 +30,7 @@ public class RigModeTests
 
     [Theory]
     [InlineData("US B")]
-    [InlineData("USB\nF 14074000")] // wire tokens travel on line protocols — injection guard
+    [InlineData("USB\nF 14074000")] // wire tokens travel on line protocols - injection guard
     [InlineData("USB\t2400")]
     public void From_Rejects_Embedded_Whitespace_And_Control_Characters(string token)
     {

@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Xml.Linq;
 
-namespace Packet.Rig.Flrig;
+namespace M0LTE.Rig.Flrig;
 
 /// <summary>
 /// The sliver of XML-RPC flrig actually uses, hand-rolled - every C# flrig consumer surveyed

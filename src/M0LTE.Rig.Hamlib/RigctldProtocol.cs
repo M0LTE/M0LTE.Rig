@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Packet.Rig.Hamlib;
+namespace M0LTE.Rig.Hamlib;
 
 /// <summary>
 /// Pure parsing for hamlib's NET rigctl ("rigctld") wire protocol, Extended Response flavour -
@@ -43,7 +43,7 @@ internal static class RigctldProtocol
         "RIG_EACCESS",      // 22 access denied
     ];
 
-    /// <summary>Human-readable form of a negative <c>RPRT</c> value, e.g. <c>-11</c> →
+    /// <summary>Human-readable form of a negative <c>RPRT</c> value, e.g. <c>-11</c> ->
     /// <c>"RIG_ENAVAIL (-11)"</c>.</summary>
     internal static string DescribeError(int rprt)
     {
@@ -131,7 +131,7 @@ internal static class RigctldProtocol
 
     /// <summary>
     /// Digest a <c>\dump_caps</c> payload into capability flags + identity. Keys off the stable
-    /// prose lines (<c>Can get Frequency:&lt;tab&gt;Y</c>, <c>Get level: SWR(…) …</c>); hamlib
+    /// prose lines (<c>Can get Frequency:&lt;tab&gt;Y</c>, <c>Get level: SWR(...) ...</c>); hamlib
     /// prints <c>Y</c>/<c>N</c>/<c>E</c> (E = emulated by the backend, which works), so
     /// anything but <c>N</c> counts as supported. Advertised caps are a statement of intent -
     /// a rig can still reject at runtime (the dummy rig advertises PTT it cannot key without a

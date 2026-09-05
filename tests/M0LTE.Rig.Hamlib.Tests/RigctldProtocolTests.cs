@@ -1,4 +1,4 @@
-namespace Packet.Rig.Hamlib.Tests;
+namespace M0LTE.Rig.Hamlib.Tests;
 
 /// <summary>
 /// Parser tests against wire text captured from a REAL <c>rigctld</c> 4.5.5 dummy rig

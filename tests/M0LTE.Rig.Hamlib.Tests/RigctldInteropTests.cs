@@ -1,16 +1,16 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using Packet.Rig;
+using M0LTE.Rig;
 
-namespace Packet.Rig.Hamlib.Tests;
+namespace M0LTE.Rig.Hamlib.Tests;
 
 /// <summary>
 /// Integration against a REAL <c>rigctld</c> driving hamlib's dummy rig (model 1) - the
 /// ecosystem's standard client-test harness (hamlib's own pytest suite does exactly this).
 /// Skipped cleanly when <c>rigctld</c> isn't installed; <c>apt install libhamlib-utils</c>
 /// lights these up. <c>--set-conf=static_data=1</c> makes the dummy's meters deterministic
-/// (RFPOWER_METER 0.5, WATTS 50.0 - stable across hamlib 4.3→master).
+/// (RFPOWER_METER 0.5, WATTS 50.0 - stable across hamlib 4.3->master).
 /// </summary>
 public sealed class RigctldInteropTests
 {
@@ -124,7 +124,7 @@ public sealed class RigctldInteropTests
             await rig.SetModeAsync(RigMode.PktUsb, 3000);
             (await rig.GetModeAsync()).Should().Be(new RigModeState(RigMode.PktUsb, 3000));
 
-            // Passband null → the rig default for the mode.
+            // Passband null -> the rig default for the mode.
             await rig.SetModeAsync(RigMode.Usb);
             var state = await rig.GetModeAsync();
             state.Mode.Should().Be(RigMode.Usb);

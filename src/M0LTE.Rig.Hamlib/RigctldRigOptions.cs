@@ -1,4 +1,4 @@
-namespace Packet.Rig.Hamlib;
+namespace M0LTE.Rig.Hamlib;
 
 /// <summary>How <see cref="RigctldRig"/> finds and paces its rigctld.</summary>
 public sealed record RigctldRigOptions
@@ -26,8 +26,8 @@ public sealed record RigctldRigOptions
     /// <summary>
     /// The dBm value of S9 used by <see cref="RigctldRig.ReadSignalStrengthDbmAsync"/>: hamlib's
     /// <c>STRENGTH</c> level is calibrated dB relative to S9, so converting to dBm needs an S9
-    /// reference. −73 dBm is the IARU Region 1 HF convention; VHF/UHF stations conventionally
-    /// use −93 - set this accordingly.
+    /// reference. -73 dBm is the IARU Region 1 HF convention; VHF/UHF stations conventionally
+    /// use -93 - set this accordingly.
     /// </summary>
     public double S9ReferenceDbm { get; init; } = -73.0;
 

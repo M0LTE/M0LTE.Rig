@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Packet.Rig.Hamlib\Packet.Rig.Hamlib.csproj" />
+    <ProjectReference Include="..\..\src\M0LTE.Rig.Hamlib\M0LTE.Rig.Hamlib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

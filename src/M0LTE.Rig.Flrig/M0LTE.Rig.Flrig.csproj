@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\M0LTE.Rig\M0LTE.Rig.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="M0LTE.Rig.Flrig.Tests" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Title>M0LTE.Rig.Flrig - rig control over flrig's XML-RPC server</Title>
+    <Description>Client for flrig's XML-RPC rig-control server (default port 12345) implementing the M0LTE.Rig IRigControl abstraction: get/set frequency and mode, PTT, SWR and RF-power metering with hamlib-compatible meter conversions, plus a raw method-call escape hatch. No dependencies beyond M0LTE.Rig. Source: github.com/M0LTE/M0LTE.Rig.</Description>
+    <PackageTags>amateur-radio;rig-control;cat;flrig;xml-rpc;transceiver;swr</PackageTags>
+  </PropertyGroup>
+
+</Project>

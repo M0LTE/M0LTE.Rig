@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Packet.Rig.Flrig;
+namespace M0LTE.Rig.Flrig;
 
 /// <summary>
 /// <see cref="IRigControl"/> over flrig's XML-RPC server (default 127.0.0.1:12345). The client
@@ -178,13 +178,13 @@ public sealed class FlrigRig : IRigControl
     {
         if (mode.Token is null)
         {
-            throw new ArgumentException("Uninitialised RigMode — use the statics or RigMode.From().", nameof(mode));
+            throw new ArgumentException("Uninitialised RigMode - use the statics or RigMode.From().", nameof(mode));
         }
 
         if (passbandHz is not null)
         {
             throw new NotSupportedException(
-                "flrig cannot set a passband width alongside the mode — pass null and let the rig choose.");
+                "flrig cannot set a passband width alongside the mode - pass null and let the rig choose.");
         }
 
         // flrig mode names are rig-native. When we have the rig's table, reject tokens outside
@@ -237,7 +237,7 @@ public sealed class FlrigRig : IRigControl
             }
         }
 
-        // Older path: a 0–100 needle deflection interpolated to a ratio.
+        // Older path: a 0-100 needle deflection interpolated to a ratio.
         var meter = await CallAsync("rig.get_swrmeter", [], cancellationToken).ConfigureAwait(false);
         return FlrigMeters.InterpolateSwr(Parse(meter, "rig.get_swrmeter"));
     }
@@ -275,21 +275,21 @@ public sealed class FlrigRig : IRigControl
     /// <inheritdoc />
     public ValueTask<bool> ReadDcdAsync(CancellationToken cancellationToken = default)
         => throw new NotSupportedException(
-            "flrig exposes no data-carrier-detect / squelch state over XML-RPC — there is nothing " +
+            "flrig exposes no data-carrier-detect / squelch state over XML-RPC - there is nothing " +
             "to serve this read from.");
 
     /// <inheritdoc />
     public ValueTask<double> ReadSignalStrengthDbmAsync(CancellationToken cancellationToken = default)
         => throw new NotSupportedException(
-            "flrig's s-meter (rig.get_smeter) is an uncalibrated 0–100 needle deflection, and we " +
-            "never synthesize dBm from uncalibrated readings — use CallRawAsync(\"rig.get_smeter\", …) " +
+            "flrig's s-meter (rig.get_smeter) is an uncalibrated 0-100 needle deflection, and we " +
+            "never synthesize dBm from uncalibrated readings - use CallRawAsync(\"rig.get_smeter\", ...) " +
             "for the raw deflection.");
 
     /// <summary>
-    /// Invoke any flrig XML-RPC method and get its string-form result — the escape hatch below
+    /// Invoke any flrig XML-RPC method and get its string-form result - the escape hatch below
     /// the <see cref="IRigControl"/> common subset (<c>rig.cat_string</c> raw CAT passthrough,
-    /// <c>rig.get_smeter</c>, split/VFO-B ops, …). Args may be <see cref="string"/>,
-    /// <see cref="int"/> or <see cref="double"/> — flrig cares about XML-RPC arg types.
+    /// <c>rig.get_smeter</c>, split/VFO-B ops, ...). Args may be <see cref="string"/>,
+    /// <see cref="int"/> or <see cref="double"/> - flrig cares about XML-RPC arg types.
     /// </summary>
     public async ValueTask<string> CallRawAsync(
         string methodName, IReadOnlyList<object>? args = null, CancellationToken cancellationToken = default)
@@ -344,7 +344,7 @@ public sealed class FlrigRig : IRigControl
         }
 
         throw new NotSupportedException(
-            $"The attached rig has no mode '{mode.Token}' — flrig reports: {string.Join(", ", SupportedModes)}.");
+            $"The attached rig has no mode '{mode.Token}' - flrig reports: {string.Join(", ", SupportedModes)}.");
     }
 
     private static double Parse(string value, string method)

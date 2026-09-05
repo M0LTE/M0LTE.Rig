@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Time.Testing;
-using Packet.Rig;
+using M0LTE.Rig;
 
-namespace Packet.Rig.Flrig.Tests;
+namespace M0LTE.Rig.Flrig.Tests;
 
 public class FlrigRigTests
 {
@@ -150,7 +150,7 @@ public class FlrigRigTests
         using var handler = new FakeFlrigHandler { SwrDirect = null, SwrMeter = 23 };
         await using var rig = await ConnectAsync(handler);
 
-        (await rig.ReadSwrAsync()).Should().Be(2.0); // 23% deflection → 2.0:1 per hamlib's table
+        (await rig.ReadSwrAsync()).Should().Be(2.0); // 23% deflection -> 2.0:1 per hamlib's table
         (await rig.ReadSwrAsync()).Should().Be(2.0);
 
         // get_SWR probed exactly once, then the fallback is sticky.

@@ -1,4 +1,4 @@
-namespace Packet.Rig.Flrig;
+namespace M0LTE.Rig.Flrig;
 
 /// <summary>How <see cref="FlrigRig"/> finds and paces its flrig server.</summary>
 public sealed record FlrigRigOptions

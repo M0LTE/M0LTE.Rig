@@ -2,11 +2,11 @@ using System.Globalization;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Packet.Rig.Hamlib;
+namespace M0LTE.Rig.Hamlib;
 
 /// <summary>
 /// <see cref="IRigControl"/> over hamlib's NET rigctl protocol - the TCP text protocol served
-/// by <c>rigctld</c> (and emulated by wfview, SDR++, GQRX, SparkSDR, skycatd, nCAT …; only real
+/// by <c>rigctld</c> (and emulated by wfview, SDR++, GQRX, SparkSDR, skycatd, nCAT ...; only real
 /// rigctld is tested against today). Pure managed sockets: no libhamlib native dependency, which
 /// is the pattern every surviving hamlib client ecosystem converged on - the P/Invoke lineage is
 /// uniformly abandoned (see <c>docs/research/rig-control-spike.md</c>).
@@ -25,14 +25,14 @@ namespace Packet.Rig.Hamlib;
 /// writers on one socket would desynchronise the stream). rigctld holds rig state server-side,
 /// so the link is stateless for us: on any IO fault, timeout, or cancellation mid-command the
 /// connection is dropped and the next command re-dials - same recover-by-redial shape as
-/// <c>Packet.Kiss.KissTcpClient</c>. Capabilities are re-probed on re-dial only if they were
+/// a KISS-over-TCP client. Capabilities are re-probed on re-dial only if they were
 /// never obtained.
 /// </para>
 /// <para>
 /// <b>Unkey on dispose.</b> If the last PTT command this client sent keyed the transmitter, or
 /// failed on the way to finding out, <see cref="DisposeAsync"/> makes a best-effort <c>T 0</c>
 /// before closing; a rig latched in TX is a station incident (same contract as
-/// <c>Packet.Radio.IRadioControl</c>). Because a key that timed out has already dropped the
+/// <c>M0LTE.Radio.IRadioControl</c>). Because a key that timed out has already dropped the
 /// connection (see the connection model above), that unkey redials once, on a bounded budget,
 /// when the socket has gone.
 /// </para>
@@ -135,12 +135,12 @@ public sealed class RigctldRig : IRigControl
         Require(RigCapabilities.ModeSet);
         if (mode.Token is null)
         {
-            throw new ArgumentException("Uninitialised RigMode — use the statics or RigMode.From().", nameof(mode));
+            throw new ArgumentException("Uninitialised RigMode - use the statics or RigMode.From().", nameof(mode));
         }
 
         if (passbandHz is < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(passbandHz), passbandHz, "Passband must be ≥ 0 Hz.");
+            throw new ArgumentOutOfRangeException(nameof(passbandHz), passbandHz, "Passband must be >= 0 Hz.");
         }
 
         // Passband 0 tells hamlib "the rig's default width for this mode" - the cross-backend
@@ -232,7 +232,7 @@ public sealed class RigctldRig : IRigControl
     }
 
     /// <summary>
-    /// Read any hamlib level by token (<c>STRENGTH</c>, <c>ALC</c>, <c>TEMP_METER</c>, …) - the
+    /// Read any hamlib level by token (<c>STRENGTH</c>, <c>ALC</c>, <c>TEMP_METER</c>, ...) - the
     /// escape hatch below the <see cref="IRigControl"/> common subset, same spirit as
     /// <c>TaitCcdiRadio.TransactRawAsync</c>. Token names come from <c>rigctl</c>'s
     /// <c>l ?</c>.
@@ -248,7 +248,7 @@ public sealed class RigctldRig : IRigControl
     /// <summary>
     /// Send a raw NET-rigctl command line (without the <c>+</c> - it is added for you) and get
     /// the reply's payload lines back, echo and <c>RPRT</c> stripped. Escape hatch for
-    /// everything not on the abstraction (split, VFO ops, <c>\send_morse</c> …).
+    /// everything not on the abstraction (split, VFO ops, <c>\send_morse</c> ...).
     /// </summary>
     public async ValueTask<IReadOnlyList<string>> TransactRawAsync(
         string commandLine, CancellationToken cancellationToken = default)

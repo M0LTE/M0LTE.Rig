@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/M0LTE.Rig/M0LTE.Rig.csproj" />
+    <Project Path="src/M0LTE.Rig.Flrig/M0LTE.Rig.Flrig.csproj" />
+    <Project Path="src/M0LTE.Rig.Hamlib/M0LTE.Rig.Hamlib.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/M0LTE.Rig.Tests/M0LTE.Rig.Tests.csproj" />
+    <Project Path="tests/M0LTE.Rig.Flrig.Tests/M0LTE.Rig.Flrig.Tests.csproj" />
+    <Project Path="tests/M0LTE.Rig.Hamlib.Tests/M0LTE.Rig.Hamlib.Tests.csproj" />
+  </Folder>
+</Solution>

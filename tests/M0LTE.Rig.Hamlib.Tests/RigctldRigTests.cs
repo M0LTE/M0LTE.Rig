@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Time.Testing;
-using Packet.Rig;
+using M0LTE.Rig;
 
-namespace Packet.Rig.Hamlib.Tests;
+namespace M0LTE.Rig.Hamlib.Tests;
 
 public class RigctldRigTests
 {
@@ -56,7 +56,7 @@ public class RigctldRigTests
         await using var rig = await ConnectAsync(fake);
 
         await rig.SetModeAsync(RigMode.Cw);
-        fake.PassbandHz.Should().Be(500); // the fake mirrors hamlib: wire passband 0 → mode default
+        fake.PassbandHz.Should().Be(500); // the fake mirrors hamlib: wire passband 0 -> mode default
         (await rig.GetModeAsync()).Should().Be(new RigModeState(RigMode.Cw, 500));
     }
 

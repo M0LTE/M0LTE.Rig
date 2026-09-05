@@ -1,4 +1,4 @@
-namespace Packet.Rig;
+namespace M0LTE.Rig;
 
 /// <summary>
 /// Station-rig (CAT) control: frequency, mode, transmitter keying, TX-side metering, and
@@ -11,14 +11,14 @@ namespace Packet.Rig;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Relationship to <c>Packet.Radio.IRadioControl</c>.</b> That interface is the
+/// <b>Relationship to <c>M0LTE.Radio.IRadioControl</c>.</b> That interface is the
 /// packet-medium seam - RSSI, hardware carrier-sense and PTT for CSMA on a channelised PMR
 /// radio (Tait CCDI). This one is the <em>station-control</em> seam: QSY, mode selection and
 /// transmit-health monitoring for CAT-controllable transceivers. They deliberately share the
 /// capability-flag pattern (plan OQ-011). The receive-side reads the packet stack's
 /// carrier-sense seam needs - <see cref="ReadDcdAsync"/> and
 /// <see cref="ReadSignalStrengthDbmAsync"/> - live here; the <c>IRadioControl</c> adapter that
-/// bridges them into the packet stack is <c>Packet.Radio</c>'s <c>RigRadioControl</c>.
+/// bridges them into the packet stack is <c>M0LTE.Radio</c>'s <c>RigRadioControl</c>.
 /// </para>
 /// <para>
 /// <b>Threading.</b> Implementations serialise commands internally - callers may issue
