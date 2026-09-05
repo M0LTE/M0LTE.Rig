@@ -34,7 +34,7 @@ namespace M0LTE.Rig.Hamlib;
 /// <b>Unkey on dispose.</b> If the last PTT command this client sent keyed the transmitter, or
 /// failed on the way to finding out, <see cref="DisposeAsync"/> makes a best-effort <c>T 0</c>
 /// before closing; a rig latched in TX is a station incident (same contract as
-/// <c>M0LTE.Radio.IRadioControl</c>). Because a key that timed out has already dropped the
+/// <see cref="IRadioControl"/>). Because a key that timed out has already dropped the
 /// connection (see the connection model above), that unkey redials once, on a bounded budget,
 /// when the socket has gone.
 /// </para>

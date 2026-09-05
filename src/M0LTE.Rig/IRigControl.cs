@@ -11,19 +11,19 @@ namespace M0LTE.Rig;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Relationship to <c>M0LTE.Radio.IRadioControl</c>.</b> That interface is the
+/// <b>Relationship to <see cref="IRadioControl"/>.</b> That interface is the
 /// packet-medium seam - RSSI, hardware carrier-sense and PTT for CSMA on a channelised PMR
 /// radio (Tait CCDI). This one is the <em>station-control</em> seam: QSY, mode selection and
 /// transmit-health monitoring for CAT-controllable transceivers. They deliberately share the
 /// capability-flag pattern. The receive-side reads the packet stack's
 /// carrier-sense seam needs - <see cref="ReadDcdAsync"/> and
-/// <see cref="ReadSignalStrengthDbmAsync"/> - live here; the <c>IRadioControl</c> adapter that
-/// bridges them into the packet stack is <c>M0LTE.Radio</c>'s <c>RigRadioControl</c>.
+/// <see cref="ReadSignalStrengthDbmAsync"/> - live here so the bridge, <see cref="RigRadioControl"/>,
+/// can serve carrier sense by polling them into <see cref="IRadioControl"/>.
 /// </para>
 /// <para>
 /// <b>Threading.</b> Implementations serialise commands internally - callers may issue
 /// concurrent calls, which queue in arrival order. Members for capabilities the backend lacks
-/// throw <see cref="NotSupportedException"/> (same discipline as <c>IRadioControl</c>).
+/// throw <see cref="NotSupportedException"/> (same discipline as <see cref="IRadioControl"/>).
 /// </para>
 /// <para>
 /// <b>Polling.</b> All current backends (rigctld, flrig) are poll-only - there is no
@@ -61,7 +61,7 @@ public interface IRigControl : IAsyncDisposable
 
     /// <summary>
     /// Key or unkey the transmitter. Implementations must guarantee best-effort unkey on dispose
-    /// - a rig latched in TX is a station incident (same contract as <c>IRadioControl</c>).
+    /// - a rig latched in TX is a station incident (same contract as <see cref="IRadioControl"/>).
     /// </summary>
     ValueTask SetPttAsync(bool transmit, CancellationToken cancellationToken = default);
 
