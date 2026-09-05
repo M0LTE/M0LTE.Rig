@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Deliberately dependency-free: this is the abstraction package generic rig-control
-       consumers (loggers, digimode apps, anything CAT-shaped) can take without inheriting
-       any AX.25 stack. Backends (M0LTE.Rig.Hamlib, M0LTE.Rig.Flrig)
-       depend on this; nothing here depends on them. -->
+  <!-- Deliberately dependency-free: this is the abstraction package generic rig-control and
+       channel-sensing consumers (loggers, digimode apps, a MAC layer or CSMA gate) can take
+       without inheriting any AX.25 stack. Backends and drivers (M0LTE.Rig.Hamlib,
+       M0LTE.Rig.Flrig, M0LTE.Tait.Ccdi) depend on this; nothing here depends on them. -->
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Title>M0LTE.Rig - station-rig (CAT) control abstraction</Title>
-    <Description>Rig-control (CAT) abstraction for amateur-radio transceivers: get/set frequency and mode, PTT, and SWR / RF-power metering behind capability probes (IRigControl + RigCapabilities). Dependency-free; backends plug in underneath (M0LTE.Rig.Hamlib speaks hamlib's rigctld network protocol, M0LTE.Rig.Flrig speaks flrig XML-RPC). Source: github.com/M0LTE/M0LTE.Rig.</Description>
-    <PackageTags>amateur-radio;rig-control;cat;hamlib;flrig;transceiver;swr</PackageTags>
+    <Title>M0LTE.Rig - rig-control abstractions: station control (CAT) and channel sensing</Title>
+    <Description>Two seams over an amateur-radio transceiver, both dependency-free and capability-probed: IRigControl, the station-control (CAT) seam for frequency, mode, PTT and SWR/RF-power metering; and IRadioControl, the channel-sensing seam for RSSI, hardware carrier-sense (DCD) edges and transmitter keying, plus IRadioSideChannel for radio-native small-datagram messaging. RigRadioControl bridges any IRigControl to IRadioControl by polling its receive-side reads. Implementations: M0LTE.Rig.Hamlib and M0LTE.Rig.Flrig for IRigControl; M0LTE.Tait.Ccdi implements both seams natively for Tait TM8100/TM8200 radios. Source: github.com/M0LTE/M0LTE.Rig.</Description>
+    <PackageTags>amateur-radio;rig-control;cat;hamlib;flrig;transceiver;swr;rssi;dcd;ptt;carrier-sense</PackageTags>
   </PropertyGroup>
 
 </Project>
