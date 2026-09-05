@@ -38,6 +38,12 @@ public sealed class FlrigRig : IRigControl
     private readonly FlrigRigOptions options;
     private readonly TimeProvider time;
     private readonly HttpClient http;
+    // Deliberately never disposed. A SemaphoreSlim owns no OS handle unless AvailableWaitHandle
+    // is touched (it never is here), and disposing it while a queued waiter's cancellation is
+    // still being processed orphans that waiter: SemaphoreSlim.Dispose drops its async-waiter
+    // list, so the cancelled wait re-checks the list, finds nothing, and then awaits a task that
+    // nothing will ever complete. Dispose cancels queued waiters via `disposing` instead and
+    // leaves the gate to the GC.
     private readonly SemaphoreSlim gate = new(1, 1);
     private readonly CancellationTokenSource disposing = new();
 
@@ -136,7 +142,6 @@ public sealed class FlrigRig : IRigControl
         catch
         {
             rig.http.Dispose();
-            rig.gate.Dispose();
             rig.disposing.Dispose();
             throw;
         }
@@ -328,7 +333,6 @@ public sealed class FlrigRig : IRigControl
         }
 
         http.Dispose();
-        gate.Dispose();
         disposing.Dispose();
     }
 
@@ -412,21 +416,7 @@ public sealed class FlrigRig : IRigControl
         }
         finally
         {
-            ReleaseGate();
-        }
-    }
-
-    /// <summary>Releases the gate, swallowing a disposal race: dispose deliberately does not
-    /// wait for an in-flight call, so the gate can be gone by the time that call releases
-    /// it.</summary>
-    private void ReleaseGate()
-    {
-        try
-        {
             gate.Release();
-        }
-        catch (ObjectDisposedException)
-        {
         }
     }
 }

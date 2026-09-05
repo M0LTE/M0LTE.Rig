@@ -48,6 +48,12 @@ public sealed class RigctldRig : IRigControl
 
     private readonly RigctldRigOptions options;
     private readonly TimeProvider time;
+    // Deliberately never disposed. A SemaphoreSlim owns no OS handle unless AvailableWaitHandle
+    // is touched (it never is here), and disposing it while a queued waiter's cancellation is
+    // still being processed orphans that waiter: SemaphoreSlim.Dispose drops its async-waiter
+    // list, so the cancelled wait re-checks the list, finds nothing, and then awaits a task that
+    // nothing will ever complete. Dispose cancels queued waiters via `disposing` instead and
+    // leaves the gate to the GC.
     private readonly SemaphoreSlim gate = new(1, 1);
     private readonly CancellationTokenSource disposing = new();
 
@@ -284,7 +290,6 @@ public sealed class RigctldRig : IRigControl
         }
 
         DropConnection();
-        gate.Dispose();
         disposing.Dispose();
     }
 
@@ -383,21 +388,7 @@ public sealed class RigctldRig : IRigControl
         }
         finally
         {
-            ReleaseGate();
-        }
-    }
-
-    /// <summary>Releases the gate, swallowing a disposal race: dispose deliberately does not
-    /// wait for an in-flight command, so the gate can be gone by the time that command releases
-    /// it.</summary>
-    private void ReleaseGate()
-    {
-        try
-        {
             gate.Release();
-        }
-        catch (ObjectDisposedException)
-        {
         }
     }
 
