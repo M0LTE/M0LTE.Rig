@@ -4,6 +4,10 @@ Newest first. Versions are the `v*` tags in this repo; all three packages releas
 
 ## Unreleased
 
+## 0.2.1
+
+- Closed a second dispose race in `RigctldRig` and `FlrigRig`: a command queued behind an in-flight one could be handed the gate by that command's release at the same instant dispose cancelled its wait, and then proceed, which in `RigctldRig` meant redialling a connection nobody would ever close. A caller that wins the gate after dispose now releases it and throws `ObjectDisposedException`. The gate itself is no longer disposed, because `SemaphoreSlim.Dispose` drops its async-waiter list and can orphan a queued waiter whose cancellation is still being processed.
+
 ## 0.2.0
 
 - `IRadioControl`, `CarrierSenseChange`, `RadioCapabilities`, `IRadioSideChannel`, `RigRadioControl` and `RigRadioControlOptions` moved here from the retired `M0LTE.Radio` 0.1.0 package, into the `M0LTE.Rig` namespace. Behaviour is unchanged; porting from `M0LTE.Radio` is a `using` edit plus swapping the package reference. The Tait driver that implemented `IRadioControl` now ships as `M0LTE.Tait.Ccdi` (from the repo formerly named `M0LTE.Radio`), not as part of this package.

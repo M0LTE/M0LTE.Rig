@@ -380,6 +380,16 @@ public sealed class RigctldRig : IRigControl
             }
         }
 
+        if (disposed)
+        {
+            // Dispose can race the wait: the in-flight command's release can hand the gate to
+            // this caller at the same instant dispose cancels the wait, and SemaphoreSlim makes
+            // no promise about which wins. A caller that wins the gate after dispose must not
+            // proceed - it would redial a connection nobody will ever close.
+            gate.Release();
+            throw new ObjectDisposedException(GetType().FullName);
+        }
+
         try
         {
             await EnsureConnectedAsync(cancellationToken).ConfigureAwait(false);
