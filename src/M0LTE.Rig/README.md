@@ -29,6 +29,7 @@ if (rig.Capabilities.HasFlag(RigCapabilities.DcdRead))
 Push carrier-sense (DCD) edges, RSSI, and transmitter keying - what a MAC layer or CSMA gate wants, because a hardware carrier-sense edge leads the modem's decoded frame by a whole preamble.
 
 ```csharp
+IRigControl rig = await RigctldRig.ConnectAsync();              // any IRigControl backend
 IRadioControl radio = new RigRadioControl(rig, ownsRig: true);   // bridge from any IRigControl
 // or a native implementation, e.g. M0LTE.Tait.Ccdi's TaitCcdiRadio
 
