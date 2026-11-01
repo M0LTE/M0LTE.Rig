@@ -4,6 +4,8 @@ Newest first. Versions are the `v*` tags in this repo; all three packages releas
 
 ## Unreleased
 
+- All three packages now target `net8.0` as well as `net10.0`, so .NET 8 apps can use them. No code changes were needed; the tests run on both.
+
 ## 0.2.1
 
 - Closed a second dispose race in `RigctldRig` and `FlrigRig`: a command queued behind an in-flight one could be handed the gate by that command's release at the same instant dispose cancelled its wait, and then proceed, which in `RigctldRig` meant redialling a connection nobody would ever close. A caller that wins the gate after dispose now releases it and throws `ObjectDisposedException`. The gate itself is no longer disposed, because `SemaphoreSlim.Dispose` drops its async-waiter list and can orphan a queued waiter whose cancellation is still being processed.
